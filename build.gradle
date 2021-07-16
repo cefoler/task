@@ -15,8 +15,6 @@ def junit = "5.7.0"
 repositories {
     mavenLocal()
     mavenCentral()
-
-    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
