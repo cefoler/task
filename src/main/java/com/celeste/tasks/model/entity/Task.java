@@ -1,7 +1,7 @@
 package com.celeste.tasks.model.entity;
 
-import com.celeste.tasks.model.entity.type.PriorityType;
 import com.celeste.tasks.model.entity.type.ExecutorType;
+import com.celeste.tasks.model.entity.type.PriorityType;
 import com.celeste.tasks.model.entity.type.StateType;
 import java.io.Closeable;
 import java.io.Serializable;

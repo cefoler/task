@@ -19,7 +19,7 @@ public final class PriorityComparator implements Comparator<Task> {
     final int priority1 = task1.getPriority().ordinal();
     final int priority2 = task2.getPriority().ordinal();
 
-    return Integer.compare(priority1, priority2);
+    return Integer.reverse(Integer.compare(priority1, priority2));
   }
 
   public static PriorityComparator getInstance() {

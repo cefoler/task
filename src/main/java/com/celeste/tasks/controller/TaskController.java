@@ -5,7 +5,10 @@ import com.celeste.tasks.model.entity.Task;
 import com.celeste.tasks.model.entity.type.ExecutorType;
 import com.celeste.tasks.model.entity.type.PriorityType;
 import com.celeste.tasks.model.entity.type.StateType;
+import com.celeste.tasks.model.list.RunnableList;
 import com.celeste.tasks.model.queue.RunnableQueue;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.Callable;
@@ -19,16 +22,20 @@ import lombok.SneakyThrows;
 
 public final class TaskController {
 
-  private static final Supplier<Queue<Task>> SUPPLIER;
+  private static final Supplier<Queue<Task>> QUEUE_SUPPLIER;
+  private static final Supplier<List<Task>> LIST_SUPPLIER;
 
   static {
-    SUPPLIER = () -> new PriorityQueue<>(PriorityComparator.getInstance());
+    QUEUE_SUPPLIER = () -> new PriorityQueue<>(PriorityComparator.getInstance());
+    LIST_SUPPLIER = ArrayList::new;
   }
 
   private final ExecutorService executor;
   private final ScheduledExecutorService scheduled;
 
-  private final Queue<Task> tasks;
+  private final RunnableQueue<Task> tasks;
+  private final RunnableList<Task> waiting;
+
   private boolean active;
   private boolean running;
 
@@ -36,15 +43,22 @@ public final class TaskController {
     this.executor = executor;
     this.scheduled = scheduled;
 
-    this.tasks = new RunnableQueue<>(SUPPLIER, this::run);
+    this.tasks = new RunnableQueue<>(QUEUE_SUPPLIER, this::run);
+    this.waiting = new RunnableList<>(LIST_SUPPLIER, this::run);
+
     this.active = true;
+    this.running = false;
   }
 
   public synchronized void shutdown() {
+    this.active = false;
+    this.running = false;
+
+    tasks.clear();
+    waiting.clear();
+
     executor.shutdown();
     scheduled.shutdown();
-
-    this.active = false;
   }
 
   public void execute(final Runnable runnable) {
@@ -97,21 +111,21 @@ public final class TaskController {
     final long run = System.currentTimeMillis() + time.toMillis(delay);
 
     final Task task = new Task(run, -1, time, runnable, priority);
-    tasks.add(task);
+    waiting.add(task);
 
     return task;
   }
 
   public Task waitAsync(final Runnable runnable, final long delay) {
-    return wait(runnable, delay, TimeUnit.SECONDS);
+    return waitAsync(runnable, delay, TimeUnit.SECONDS);
   }
 
   public Task waitAsync(final Runnable runnable, final long delay, final TimeUnit time) {
-    return wait(runnable, delay, time, PriorityType.NORMAL);
+    return waitAsync(runnable, delay, time, PriorityType.NORMAL);
   }
 
   public Task waitAsync(final Runnable runnable, final long delay, final PriorityType priority) {
-    return wait(runnable, delay, TimeUnit.SECONDS, priority);
+    return waitAsync(runnable, delay, TimeUnit.SECONDS, priority);
   }
 
   public Task waitAsync(final Runnable runnable, final long delay, final TimeUnit time,
@@ -119,7 +133,7 @@ public final class TaskController {
     final long run = System.currentTimeMillis() + time.toMillis(delay);
 
     final Task task = new Task(run, -1, time, runnable, ExecutorType.ASYNC, priority);
-    tasks.add(task);
+    waiting.add(task);
 
     return task;
   }
@@ -143,23 +157,23 @@ public final class TaskController {
     final long run = System.currentTimeMillis() + time.toMillis(delay);
 
     final Task task = new Task(run, period, time, runnable, priority);
-    tasks.add(task);
+    waiting.add(task);
 
     return task;
   }
 
   public Task timerAsync(final Runnable runnable, final long delay, final long period) {
-    return timer(runnable, delay, period, TimeUnit.SECONDS);
+    return timerAsync(runnable, delay, period, TimeUnit.SECONDS);
   }
 
   public Task timerAsync(final Runnable runnable, final long delay, final long period,
       final TimeUnit time) {
-    return timer(runnable, delay, period, time, PriorityType.NORMAL);
+    return timerAsync(runnable, delay, period, time, PriorityType.NORMAL);
   }
 
   public Task timerAsync(final Runnable runnable, final long delay, final long period,
       final PriorityType priority) {
-    return timer(runnable, delay, period, TimeUnit.SECONDS, priority);
+    return timerAsync(runnable, delay, period, TimeUnit.SECONDS, priority);
   }
 
   public Task timerAsync(final Runnable runnable, final long delay, final long period,
@@ -167,11 +181,12 @@ public final class TaskController {
     final long run = System.currentTimeMillis() + time.toMillis(delay);
 
     final Task task = new Task(run, period, time, runnable, ExecutorType.ASYNC, priority);
-    tasks.add(task);
+    waiting.add(task);
 
     return task;
   }
 
+  @SneakyThrows
   private synchronized void run() {
     if (running) {
       return;
@@ -179,8 +194,30 @@ public final class TaskController {
 
     this.running = true;
 
-    while (active && !tasks.isEmpty()) {
+    while (active) {
+      wait(10);
+
+      if (tasks.isEmpty()) {
+        if (waiting.isEmpty()) {
+          break;
+        }
+
+        tasks.addAll(waiting);
+        waiting.clear();
+        continue;
+      }
+
       final Task task = tasks.poll();
+
+      if (task.getState().equals(StateType.TERMINATED)) {
+        continue;
+      }
+
+      if (task.getRun() > System.currentTimeMillis()) {
+        waiting.add(task);
+        continue;
+      }
+
       final Runnable runnable = task.getRunnable();
       task.setState(StateType.RUNNABLE);
 
@@ -201,7 +238,7 @@ public final class TaskController {
       }
 
       task.next();
-      tasks.add(task);
+      waiting.add(task);
     }
 
     this.running = false;
