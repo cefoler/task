@@ -187,61 +187,63 @@ public final class TaskController {
   }
 
   @SneakyThrows
-  private synchronized void run() {
+  private void run() {
     if (running) {
       return;
     }
 
-    this.running = true;
+    synchronized (this) {
+      this.running = true;
 
-    while (active) {
-      wait(10);
+      while (active) {
+        wait(10);
 
-      if (tasks.isEmpty()) {
-        if (waiting.isEmpty()) {
-          break;
+        if (tasks.isEmpty()) {
+          if (waiting.isEmpty()) {
+            break;
+          }
+
+          tasks.addAll(waiting);
+          waiting.clear();
+          continue;
         }
 
-        tasks.addAll(waiting);
-        waiting.clear();
-        continue;
-      }
+        final Task task = tasks.poll();
 
-      final Task task = tasks.poll();
+        if (task.getState().equals(StateType.TERMINATED)) {
+          continue;
+        }
 
-      if (task.getState().equals(StateType.TERMINATED)) {
-        continue;
-      }
+        if (task.getRun() > System.currentTimeMillis()) {
+          waiting.add(task);
+          continue;
+        }
 
-      if (task.getRun() > System.currentTimeMillis()) {
+        final Runnable runnable = task.getRunnable();
+        task.setState(StateType.RUNNABLE);
+
+        switch (task.getExecutor()) {
+          case SYNC:
+            runnable.run();
+            break;
+          case ASYNC:
+            executor.execute(runnable);
+            break;
+          default:
+            throw new NullPointerException("Executor cannot be null");
+        }
+
+        if (task.getPeriod() < 0) {
+          task.close();
+          continue;
+        }
+
+        task.next();
         waiting.add(task);
-        continue;
       }
 
-      final Runnable runnable = task.getRunnable();
-      task.setState(StateType.RUNNABLE);
-
-      switch (task.getExecutor()) {
-        case SYNC:
-          runnable.run();
-          break;
-        case ASYNC:
-          executor.execute(runnable);
-          break;
-        default:
-          throw new NullPointerException("Executor cannot be null");
-      }
-
-      if (task.getPeriod() < 0) {
-        task.close();
-        continue;
-      }
-
-      task.next();
-      waiting.add(task);
+      this.running = false;
     }
-
-    this.running = false;
   }
 
 }

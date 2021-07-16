@@ -18,12 +18,11 @@ public class Main {
     final TaskController task = new TaskController(Executors.newCachedThreadPool(),
         Executors.newScheduledThreadPool(1));
 
-//    final Task t1 = task.wait(() -> System.out.println("-"), 1, TimeUnit.SECONDS);
-//    final Task t2 = task.wait(() -> System.out.println("AAADA"), 10, TimeUnit.SECONDS);
-    final Task t3 = task.wait(() -> System.out.println("NOVHIOAO"), 10, TimeUnit.SECONDS, PriorityType.MINIMUM);
-    final Task t4 = task.wait(() -> System.out.println("LUIZA NERDOLA"), 10, TimeUnit.SECONDS, PriorityType.SUPER);
+    final long l = System.currentTimeMillis();
+    final Task t3 = task.waitAsync(() -> System.out.println("NOVHIOAO"), 10, TimeUnit.SECONDS, PriorityType.MINIMUM);
+    final Task t4 = task.waitAsync(() -> System.out.println("LUIZA NERDOLA"), 10, TimeUnit.SECONDS, PriorityType.SUPER);
 
-    System.out.println("AKDAJWOADWOJKMAWD");
+    System.out.println(System.currentTimeMillis() - l);
 //    task.shutdown();
   }
 
