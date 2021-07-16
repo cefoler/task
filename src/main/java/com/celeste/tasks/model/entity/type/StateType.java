@@ -1,6 +1,7 @@
 package com.celeste.tasks.model.entity.type;
 
 import com.google.common.collect.ImmutableList;
+import java.lang.Thread.State;
 import java.security.InvalidParameterException;
 import java.util.Arrays;
 import java.util.List;
@@ -10,12 +11,10 @@ import org.jetbrains.annotations.Nullable;
 @Getter
 public enum StateType {
 
-  NEW,
-  RUNNABLE,
-  BLOCKED,
-  WAITING,
-  TIME_WAITING,
-  TERMINATED;
+  NEW("NEW"),
+  RUNNABLE("RUNNABLE"),
+  WAITING("WAITING"),
+  TERMINATED("TERMINATED");
 
   private final List<String> names;
 

@@ -1,5 +1,7 @@
 package com.celeste.tasks.factory;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,22 @@ public final class TaskFactory {
 
   static {
     INSTANCE = new TaskFactory();
+  }
+
+  public void start() {
+
+  }
+
+  public void start(final ExecutorService executor) {
+
+  }
+
+  public void start(final ScheduledExecutorService scheduled) {
+
+  }
+
+  public void start(final ExecutorService executor, final ScheduledExecutorService scheduled) {
+
   }
 
   public static TaskFactory getInstance() {
