@@ -5,13 +5,16 @@ import com.celeste.tasks.model.entity.type.PriorityType;
 import com.celeste.tasks.model.entity.type.StateType;
 import java.io.Closeable;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public final class Task implements Serializable, Closeable, Cloneable, Comparable<Task> {
 
@@ -212,6 +215,11 @@ public final class Task implements Serializable, Closeable, Cloneable, Comparabl
 
     final Task task = (Task) object;
     return task.getId().equals(id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, run, period, time, runnable, executor, priority, state);
   }
 
   @Override

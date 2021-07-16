@@ -1,5 +1,6 @@
 plugins {
-    id 'java'
+    id "java"
+    id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
 group "com.celeste.tasks"
@@ -42,9 +43,9 @@ dependencies {
 }
 
 jar {
-    from 'LICENSE.md'
+    from "LICENSE.md"
 }
 
 tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+    options.encoding = "UTF-8"
 }
