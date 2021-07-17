@@ -224,7 +224,7 @@ public final class Task implements Serializable, Closeable, Cloneable, Comparabl
 
   @Override
   public String toString() {
-    return "Task - #" + id + " {"
+    return "Task - " + id + " {"
         + "id=" + id
         + ", run=" + run
         + ", period=" + period

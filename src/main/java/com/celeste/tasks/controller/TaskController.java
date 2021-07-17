@@ -16,6 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import lombok.SneakyThrows;
@@ -31,7 +32,6 @@ public final class TaskController {
   }
 
   private final ExecutorService executor;
-  private final ScheduledExecutorService scheduled;
 
   private final RunnableQueue<Task> tasks;
   private final RunnableList<Task> waiting;
@@ -39,9 +39,8 @@ public final class TaskController {
   private boolean active;
   private boolean running;
 
-  public TaskController(final ExecutorService executor, final ScheduledExecutorService scheduled) {
+  public TaskController(final ExecutorService executor) {
     this.executor = executor;
-    this.scheduled = scheduled;
 
     this.tasks = new RunnableQueue<>(QUEUE_SUPPLIER, this::run);
     this.waiting = new RunnableList<>(LIST_SUPPLIER, this::run);
@@ -58,7 +57,6 @@ public final class TaskController {
     waiting.clear();
 
     executor.shutdown();
-    scheduled.shutdown();
   }
 
   public void execute(final Runnable runnable) {
