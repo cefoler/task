@@ -15,8 +15,6 @@ def junit = "5.7.0"
 repositories {
     mavenLocal()
     mavenCentral()
-
-    maven { url "https://jitpack.io" }
 }
 
 dependencies {
@@ -42,5 +40,9 @@ dependencies {
 }
 
 jar {
-    from "LICENSE.md"
+    from 'LICENSE.md'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }
