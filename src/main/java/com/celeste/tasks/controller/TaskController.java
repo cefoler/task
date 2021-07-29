@@ -222,8 +222,7 @@ public final class TaskController {
 
         switch (task.getExecutor()) {
           case SYNC:
-            final Thread thread = new Thread(runnable);
-            thread.start();
+            runnable.run();
             break;
           case ASYNC:
             executor.execute(runnable);
