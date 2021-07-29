@@ -29,6 +29,7 @@ public class RunnableList<T> extends ForwardingList<T> {
   public boolean add(@NotNull final T result) {
     final boolean status = super.add(result);
     final Thread thread = new Thread(runnable);
+    thread.setDaemon(true);
     thread.start();
 
     return status;
@@ -38,6 +39,7 @@ public class RunnableList<T> extends ForwardingList<T> {
   public boolean addAll(@NotNull final Collection<? extends T> collection) {
     final boolean status = super.addAll(collection);
     final Thread thread = new Thread(runnable);
+    thread.setDaemon(true);
     thread.start();
 
     return status;

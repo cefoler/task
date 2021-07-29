@@ -21,6 +21,7 @@ public class RunnableQueue<T> extends ForwardingQueue<T> {
   public boolean add(@NotNull final T result) {
     final boolean status = super.add(result);
     final Thread thread = new Thread(runnable);
+    thread.setDaemon(true);
     thread.start();
 
     return status;
@@ -30,6 +31,7 @@ public class RunnableQueue<T> extends ForwardingQueue<T> {
   public boolean addAll(@NotNull final Collection<? extends T> collection) {
     final boolean status = super.addAll(collection);
     final Thread thread = new Thread(runnable);
+    thread.setDaemon(true);
     thread.start();
 
     return status;
