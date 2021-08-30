@@ -21,8 +21,7 @@ public final class TaskFactory {
   }
 
   public TaskController start() {
-    final ExecutorService executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE, 5L,
-        TimeUnit.MINUTES, new SynchronousQueue<>());
+    final ExecutorService executor = ThreadingFactory.threadPool();
 
     return new TaskController(executor);
   }
