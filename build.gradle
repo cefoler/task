@@ -1,14 +1,15 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "7.0.0"
+    id "org.jetbrains.kotlin.jvm" version "1.6.20"
     id "maven-publish"
     id "java"
 }
 
 group "com.celeste.tasks"
-version "1.0.2-SNAPSHOT"
+version "1.1.0-SNAPSHOT"
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenLocal()
@@ -16,16 +17,18 @@ repositories {
 }
 
 dependencies {
-    def lombok = "org.projectlombok:lombok:1.18.22"
-    def annotations = "org.jetbrains:annotations:22.0.0"
-
     implementation 'com.google.guava:guava:31.0.1-jre'
+
+    def lombok = "org.projectlombok:lombok:1.18.24"
+    def annotations = "org.jetbrains:annotations:23.0.0"
 
     compileOnly lombok, annotations
     annotationProcessor lombok, annotations
 
-    def junit = "5.8.2"
+    def kotlinx = "org.jetbrains.kotlinx:kotlinx"
+    implementation "$kotlinx-coroutines-core:1.6.2"
 
+    def junit = "5.8.2"
     testCompileOnly "org.junit.jupiter:junit-jupiter-api:${junit}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junit}"
 }
@@ -47,10 +50,6 @@ publishing {
 }
 
 shadowJar {
-    relocate "com.fasterxml.jackson", "com.celeste.configuration.jackson"
-    relocate "org.yaml.snakeyaml", "com.celeste.configuration.snakeyaml"
-
     relocate "com.google.common", "com.celeste.configuration.guava"
-
-    archiveFileName = "Configuration-${project.version}.jar"
+    archiveFileName = "Tasks-${project.version}.jar"
 }

@@ -1,4 +1,4 @@
 install:
   - ./gradlew build :publishToMavenLocal
 jdk:
-  - openjdk8
+  - openjdk17
