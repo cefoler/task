@@ -1,6 +1,6 @@
-package com.celeste.tasks.factory
+package com.cefoler.tasks.factory
 
-import com.celeste.tasks.controller.TaskController
+import com.cefoler.tasks.controller.TaskController
 import lombok.AccessLevel
 import lombok.Getter
 import lombok.NoArgsConstructor

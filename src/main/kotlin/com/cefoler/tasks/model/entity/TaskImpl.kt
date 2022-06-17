@@ -1,16 +1,15 @@
-package com.celeste.tasks.model.entity
+package com.cefoler.tasks.model.entity
 
-import com.celeste.tasks.model.entity.type.ExecutorType
-import com.celeste.tasks.model.entity.type.PriorityType
-import com.celeste.tasks.model.entity.type.StateType
+import com.cefoler.tasks.model.entity.type.ExecutorType
+import com.cefoler.tasks.model.entity.type.PriorityType
+import com.cefoler.tasks.model.entity.type.StateType
 import lombok.AllArgsConstructor
 import lombok.Getter
 import lombok.Setter
 import lombok.SneakyThrows
 import java.io.Closeable
 import java.io.Serializable
-import java.util.Objects
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Getter

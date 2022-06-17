@@ -1,6 +1,6 @@
-package com.celeste.tasks.model.comparator
+package com.cefoler.tasks.model.comparator
 
-import com.celeste.tasks.model.entity.Task
+import com.cefoler.tasks.model.entity.Task
 import lombok.AccessLevel
 import lombok.NoArgsConstructor
 

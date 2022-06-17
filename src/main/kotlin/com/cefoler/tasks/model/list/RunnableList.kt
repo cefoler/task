@@ -1,17 +1,24 @@
-package com.celeste.tasks.model.queue
+package com.cefoler.tasks.model.list
 
-import com.google.common.collect.ForwardingQueue
+import com.google.common.collect.ForwardingList
 import lombok.RequiredArgsConstructor
-import java.util.Queue
 import java.util.function.Supplier
 
 @RequiredArgsConstructor
-class RunnableQueue<T>(
-  private val queue: Queue<T>,
+class RunnableList<T>(
+  private val list: List<T>,
   private val runnable: Runnable,
-) : ForwardingQueue<T>() {
+) : ForwardingList<T>() {
 
-  constructor(supplier: Supplier<Queue<T>>, runnable: Runnable) : this(supplier.get(), runnable)
+  constructor(supplier: Supplier<List<T>>, runnable: Runnable) : this(supplier.get(), runnable)
+
+  fun addDefault(result: T): Boolean {
+    return super.add(result)
+  }
+
+  fun addAllDefault(collection: Collection<T>): Boolean {
+    return super.addAll(collection)
+  }
 
   override fun add(result: T): Boolean {
     val status = super.add(result)
@@ -33,8 +40,8 @@ class RunnableQueue<T>(
     return status
   }
 
-  override fun delegate(): Queue<T> {
-    return queue
+  override fun delegate(): List<T> {
+    return list
   }
 
 }

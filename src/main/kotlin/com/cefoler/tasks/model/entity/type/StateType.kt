@@ -1,4 +1,4 @@
-package com.celeste.tasks.model.entity.type
+package com.cefoler.tasks.model.entity.type
 
 import com.google.common.collect.ImmutableList
 import lombok.Getter

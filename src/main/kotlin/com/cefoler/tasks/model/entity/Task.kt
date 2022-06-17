@@ -1,8 +1,8 @@
-package com.celeste.tasks.model.entity
+package com.cefoler.tasks.model.entity
 
-import com.celeste.tasks.model.entity.type.ExecutorType
-import com.celeste.tasks.model.entity.type.PriorityType
-import com.celeste.tasks.model.entity.type.StateType
+import com.cefoler.tasks.model.entity.type.ExecutorType
+import com.cefoler.tasks.model.entity.type.PriorityType
+import com.cefoler.tasks.model.entity.type.StateType
 import java.io.Serializable
 
 interface Task : Serializable {

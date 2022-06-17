@@ -1,29 +1,25 @@
-package com.celeste.tasks.controller
+package com.cefoler.tasks.controller
 
-import com.celeste.tasks.model.comparator.PriorityComparator
-import com.celeste.tasks.model.entity.Task
-import com.celeste.tasks.model.entity.TaskImpl
-import com.celeste.tasks.model.entity.type.ExecutorType
-import com.celeste.tasks.model.entity.type.PriorityType
-import com.celeste.tasks.model.entity.type.StateType
-import com.celeste.tasks.model.list.RunnableList
-import com.celeste.tasks.model.queue.RunnableQueue
+import com.cefoler.tasks.model.comparator.PriorityComparator
+import com.cefoler.tasks.model.entity.Task
+import com.cefoler.tasks.model.entity.TaskImpl
+import com.cefoler.tasks.model.entity.type.ExecutorType
+import com.cefoler.tasks.model.entity.type.PriorityType
+import com.cefoler.tasks.model.entity.type.StateType
+import com.cefoler.tasks.model.list.RunnableList
+import com.cefoler.tasks.model.queue.RunnableQueue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import lombok.SneakyThrows
-import java.util.PriorityQueue
-import java.util.Queue
-import java.util.concurrent.Callable
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Future
-import java.util.concurrent.TimeUnit
+import java.util.*
+import java.util.concurrent.*
 import java.util.function.Supplier
 
 class TaskController(
   private val executor: ExecutorService,
-  private val tasks: RunnableQueue<Task> = RunnableQueue(QUEUE_SUPPLIER) { this.run() },
-  private val waiting: RunnableList<Task> = RunnableList(LIST_SUPPLIER) { this.run() },
+  private val runnable: Runnable = object : Runnable { override fun run() { this.run() } }, // Is there anything else we can improve here?
+  private val tasks: RunnableQueue<Task> = RunnableQueue(QUEUE_SUPPLIER, runnable),
+  private val waiting: RunnableList<Task> = RunnableList(LIST_SUPPLIER, runnable),
   private var active: Boolean = true,
   private var running: Boolean = false,
 ) {
@@ -183,8 +179,8 @@ class TaskController(
         task.setState(StateType.RUNNABLE)
         
         when (task.getExecutor()) {
-          SYNC -> runnable.run()
-          ASYNC -> executor.execute(runnable)
+          ExecutorType.ASYNC -> executor.execute(runnable)
+          else -> runnable.run()
         }
 
         if (task.getPeriod() < 0) {

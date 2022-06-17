@@ -1,15 +1,8 @@
-package com.celeste.tasks.factory
+package com.cefoler.tasks.factory
 
 import lombok.AccessLevel
 import lombok.NoArgsConstructor
-import java.util.concurrent.BlockingQueue
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.ScheduledThreadPoolExecutor
-import java.util.concurrent.SynchronousQueue
-import java.util.concurrent.ThreadFactory
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 object ThreadingFactory {
